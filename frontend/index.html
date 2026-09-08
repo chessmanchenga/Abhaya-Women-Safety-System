@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Abhaya — Women's Safety</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<div id="toast"></div>
+<div id="authView" class="auth-shell">
+  <div class="auth-art">
+    <div class="brand big"><span>✦</span> ABHAYA</div>
+    <h1>Your safety.<br><em>Your confidence.</em></h1>
+    <p>Live safety intelligence, safer routes and trusted rides — designed around you.</p>
+    <div class="trust-row"><span>🛡️ Safety intelligence</span><span>📍 Live location</span><span>🚕 Safer rides</span></div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-tabs"><button class="active" onclick="showAuth('login')">Sign in</button><button onclick="showAuth('register')">Create account</button></div>
+    <form id="loginForm" onsubmit="login(event)">
+      <h2>Welcome back</h2><p class="muted">Sign in to continue to Abhaya.</p>
+      <label>Email<input id="loginEmail" type="email" required placeholder="you@example.com"></label>
+      <label>Password<input id="loginPassword" type="password" required placeholder="••••••••"></label>
+      <button class="primary full">Sign in to Abhaya</button>
+      <button type="button" class="demo" onclick="demoLogin()">Use demo mode</button>
+    </form>
+    <form id="registerForm" class="hidden" onsubmit="register(event)">
+      <h2>Create your account</h2><p class="muted">A safer journey starts here.</p>
+      <label>Full name<input id="regName" required placeholder="Your name"></label>
+      <label>Email<input id="regEmail" type="email" required placeholder="you@example.com"></label>
+      <label>Password<input id="regPassword" type="password" minlength="4" required placeholder="At least 4 characters"></label>
+      <label>Emergency contact<input id="regEmergency" placeholder="+91 XXXXX XXXXX"></label>
+      <button class="primary full">Create account</button>
+    </form>
+  </div>
+</div>
+
+<div id="appView" class="app hidden">
+  <aside class="sidebar">
+    <div class="brand"><span>✦</span> ABHAYA</div>
+    <div class="tag">WOMEN'S SAFETY PLATFORM</div>
+    <nav>
+      <button class="nav active" data-page="dashboard">⌂ <span>Dashboard</span></button>
+      <button class="nav" data-page="map">◉ <span>Safety Map</span></button>
+      <button class="nav" data-page="routes">➤ <span>Safe Routes</span></button>
+      <button class="nav" data-page="rides">▣ <span>Book a Ride</span></button>
+      <button class="nav" data-page="report">＋ <span>Report Incident</span></button>
+      <button class="nav" data-page="history">◷ <span>My History</span></button>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="nav sos-nav" onclick="openSOS()">⚠ <span>Emergency / SOS</span></button>
+      <div class="user-mini"><div class="avatar" id="avatar">S</div><div><b id="userName">Guest</b><small>Abhaya member</small></div><button onclick="logout()">↪</button></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header><div><div class="eyebrow">WOMEN'S SAFETY PLATFORM</div><h1 id="pageTitle">Good evening, <span id="helloName">there</span>.</h1></div>
+      <div class="header-actions"><button class="icon-btn" onclick="locateMe()">⌖</button><button class="profile-pill" onclick="showPage('history')"><span id="headerAvatar">S</span><b id="headerName">Guest</b></button></div>
+    </header>
+
+    <section id="dashboard" class="page">
+      <div class="hero-grid">
+        <div class="map-card"><div class="map-toolbar"><div><b>Live Safety Map</b><small id="locationStatus">Location permission not requested</small></div><button onclick="showPage('map')">Open full map ↗</button></div><div id="dashMap"></div></div>
+        <div class="score-card"><div class="score-top"><span>AREA SAFETY</span><span id="scoreLevel" class="badge green">GREEN</span></div><div class="score"><strong id="score">—</strong><span>/100</span></div><div class="score-bar"><i id="scoreBar"></i></div><p id="scoreText">Allow location access to calculate your current safety score.</p><div class="metrics"><div><b id="nearbyIncidents">—</b><small>nearby reports</small></div><div><b id="policeCount">2</b><small>police points</small></div><div><b id="hospitalCount">2</b><small>hospitals</small></div></div><button class="primary full" onclick="showPage('routes')">Plan safer route →</button></div>
+      </div>
+      <div class="section-title"><div><h2>Quick actions</h2><p>Get help or start your journey.</p></div></div>
+      <div class="quick-grid"><button onclick="showPage('rides')"><span>🚕</span><b>Book a ride</b><small>Compare trusted options</small></button><button onclick="showPage('report')"><span>📍</span><b>Report an incident</b><small>Help keep the community safe</small></button><button onclick="locateMe()"><span>⌖</span><b>Find nearby help</b><small>Police & hospitals</small></button><button class="danger-card" onclick="openSOS()"><span>🚨</span><b>Emergency SOS</b><small>Call, SMS & share location</small></button></div>
+      <div class="section-title"><div><h2>Safety zones</h2><p>Based on reports and local safety signals.</p></div><button class="text-btn" onclick="showPage('map')">View map →</button></div>
+      <div class="zone-legend"><div><i class="dot green"></i><b>Green</b><span>Generally safe</span></div><div><i class="dot yellow"></i><b>Yellow</b><span>Mixed reports</span></div><div><i class="dot red"></i><b>Red</b><span>Multiple complaints</span></div><div><i class="dot black"></i><b>Black</b><span>High risk</span></div></div>
+    </section>
+
+    <section id="map" class="page hidden">
+      <div class="page-head"><div><p>Live location, risk zones and nearby emergency facilities.</p></div><button class="primary" onclick="locateMe()">⌖ Locate me</button></div>
+      <div class="full-map-wrap"><div id="mainMap"></div><div class="map-key"><b>Safety zones</b><span><i class="dot green"></i>Safe</span><span><i class="dot yellow"></i>Mixed</span><span><i class="dot red"></i>Risk</span><span><i class="dot black"></i>High risk</span></div></div>
+    </section>
+
+    <section id="routes" class="page hidden">
+      <div class="page-head"><div><p>Don't choose only the shortest path. Choose the route that feels right.</p></div></div>
+      <div class="route-form"><label>Destination<input id="destination" placeholder="e.g. Benz Circle, Vijayawada"></label><button class="primary" onclick="planRoutes()">Find routes</button></div>
+      <div id="routeResults" class="route-results"></div>
+      <div class="route-note">Route planning uses live routing when available. Risk is estimated from Abhaya safety reports along the route.</div>
+    </section>
+
+    <section id="rides" class="page hidden">
+      <div class="page-head"><div><p>Compare options and prioritize driver safety.</p></div></div>
+      <div class="ride-form"><label>Pickup<input id="pickup" value="Current location"></label><label>Destination<input id="rideDestination" placeholder="Where are you going?"></label><button class="primary" onclick="estimateRides()">Search rides</button></div>
+      <div class="provider-grid">
+        <div class="provider-card"><div class="provider-icon ola">O</div><div><b>Ola</b><small>External booking</small></div><strong id="olaPrice">₹180</strong><button onclick="externalRide('Ola')">Open Ola ↗</button></div>
+        <div class="provider-card"><div class="provider-icon uber">U</div><div><b>Uber</b><small>External booking</small></div><strong id="uberPrice">₹195</strong><button onclick="externalRide('Uber')">Open Uber ↗</button></div>
+      </div>
+      <h3 class="subhead">Abhaya partner drivers</h3><div id="drivers" class="drivers-grid"></div>
+    </section>
+
+    <section id="report" class="page hidden">
+      <div class="page-head"><div><p>Your report can help someone choose a safer path.</p></div></div>
+      <div class="form-card"><label>Incident type<select id="incidentType"><option>Harassment</option><option>Stalking</option><option>Eve-teasing</option><option>Poor lighting</option><option>Isolated road</option><option>Unsafe public transport</option><option>Other</option></select></label><label>Location<button type="button" class="location-input" onclick="locateMe()">⌖ Use my current location <span id="reportLocation">Not set</span></button></label><label>What happened?<textarea id="incidentDescription" rows="5" placeholder="Please describe the incident without sharing unnecessary personal information."></textarea></label><button class="primary" onclick="submitIncident()">Submit confidential report</button></div>
+    </section>
+
+    <section id="history" class="page hidden">
+      <div class="page-head"><div><p>Your personal incident reports and booked journeys.</p></div></div>
+      <h3 class="subhead">My incident history</h3>
+      <div id="incidentHistoryList" class="history-list"><div class="empty">Your reported incidents will appear here.</div></div>
+      <h3 class="subhead">My rides</h3>
+      <div id="historyList" class="history-list"><div class="empty">Your booked journeys will appear here.</div></div>
+    </section>
+  </main>
+</div>
+
+<div id="sosModal" class="modal hidden"><div class="modal-card sos-modal"><button class="close" type="button" aria-label="Close emergency dialog" onclick="closeSOS()">×</button><div class="sos-icon">🚨</div><h2>Emergency mode</h2><p id="sosLocation">Getting your last known location…</p><button class="emergency" type="button" onclick="callEmergency()">📞 Call emergency services (100)</button><button class="secondary" type="button" onclick="sendSOS()">📱 Send SOS SMS</button><button class="secondary" type="button" onclick="shareLocation()">📍 Share my location</button><small>These actions use your device's phone, messaging and sharing capabilities. On a laptop, call/SMS may require a linked phone app.</small></div></div>
+
+<div id="feedbackModal" class="modal hidden"><div class="modal-card"><button class="close" onclick="closeFeedback()">×</button><h2>How was your ride?</h2><p class="muted">Your feedback improves driver safety for everyone.</p><input type="hidden" id="feedbackRide"><input type="hidden" id="feedbackDriver"><label>Overall rating<select id="feedbackRating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label><label>Safety<select id="feedbackSafety"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label><label>Driver behaviour<select id="feedbackBehavior"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label><label>Driving<select id="feedbackDriving"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label><label>Comment<textarea id="feedbackComment" rows="3" placeholder="Optional feedback"></textarea></label><button class="primary full" onclick="submitFeedback()">Submit feedback</button></div></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
